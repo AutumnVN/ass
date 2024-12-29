@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonEntry> {
-    public ButtonListWidget(MinecraftClient client, int width, int height, int y, int itemHeight) {
-        super(client, width, height, y, itemHeight);
+    public ButtonListWidget(MinecraftClient client, int width, int height, int top, int bottom, int itemHeight) {
+        super(client, width, height, top, bottom, itemHeight);
     }
 
     void addOptionEntry(SimpleOption<?> options) {

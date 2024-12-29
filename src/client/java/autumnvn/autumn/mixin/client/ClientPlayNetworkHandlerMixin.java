@@ -20,7 +20,7 @@ public class ClientPlayNetworkHandlerMixin {
     // TPS
     @Inject(method = "onWorldTimeUpdate", at = @At("HEAD"))
     private void onWorldTimeUpdate(WorldTimeUpdateS2CPacket packet, CallbackInfo ci) {
-        long tick = packet.time();
+        long tick = packet.getTime();
         long time = System.nanoTime();
         if (lastTick != 0 && lastTime != 0) {
             long passedTick = tick - lastTick;

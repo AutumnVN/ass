@@ -22,7 +22,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PlayerInput;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
@@ -48,7 +47,7 @@ public class AutumnClient implements ClientModInitializer {
         settingKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Open Autumn Settings", GLFW.GLFW_KEY_BACKSLASH, "Autumn"));
         zoomKey = KeyBindingHelper.registerKeyBinding(new KeyBinding("Zoom", GLFW.GLFW_KEY_LEFT_ALT, "Autumn"));
 
-        FabricLoader.getInstance().getModContainer("autumn").ifPresent(container -> ResourceManagerHelper.registerBuiltinResourcePack(Identifier.of("autumn", "autumn"), container, ResourcePackActivationType.DEFAULT_ENABLED));
+        FabricLoader.getInstance().getModContainer("autumn").ifPresent(container -> ResourceManagerHelper.registerBuiltinResourcePack(new Identifier("autumn", "autumn"), container, ResourcePackActivationType.DEFAULT_ENABLED));
         BlockRenderLayerMap.INSTANCE.putBlock(Blocks.BARRIER, RenderLayer.getTranslucent());
 
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
@@ -74,7 +73,7 @@ public class AutumnClient implements ClientModInitializer {
             // FreeCam
             if (AutumnClient.options.freeCam.getValue() && client.player.input instanceof KeyboardInput) {
                 Input input = new Input();
-                input.playerInput = new PlayerInput(false, false, false, false, false, client.player.input.playerInput.sneak(), false);
+                input.sneaking = client.player.input.sneaking;
                 client.player.input = input;
             } else if (!AutumnClient.options.freeCam.getValue() && !(client.player.input instanceof KeyboardInput)) {
                 client.player.input = new KeyboardInput(client.options);

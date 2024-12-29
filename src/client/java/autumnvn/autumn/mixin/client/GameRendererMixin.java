@@ -18,7 +18,7 @@ public class GameRendererMixin {
 
     @Final
     @Shadow
-    private MinecraftClient client;
+    MinecraftClient client;
 
     @Unique
     private Double defaultMouseSen;

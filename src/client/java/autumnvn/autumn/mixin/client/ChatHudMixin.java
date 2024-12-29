@@ -11,14 +11,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ChatHudMixin {
 
     // BetterChat
-    @ModifyConstant(method = "addVisibleMessage", constant = @Constant(intValue = 100))
-    private int maxVisibleChatLength(int original) {
-        return AutumnClient.options.betterChat.getValue() ? 65536 : original;
-    }
-
-    @ModifyConstant(method = "addMessage(Lnet/minecraft/client/gui/hud/ChatHudLine;)V", constant = @Constant(intValue = 100))
-    private int maxChatLength(int original) {
-        return AutumnClient.options.betterChat.getValue() ? 65536 : original;
+    @ModifyConstant(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignatureData;ILnet/minecraft/client/gui/hud/MessageIndicator;Z)V", constant = @Constant(intValue = 100))
+    private int addMessage(int original) {
+        return AutumnClient.options.betterChat.getValue() ? 65535 : original;
     }
 
     @Inject(method = "clear", at = @At("HEAD"), cancellable = true)

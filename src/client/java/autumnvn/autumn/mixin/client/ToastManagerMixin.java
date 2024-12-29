@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ToastManager.class)
 public class ToastManagerMixin {
@@ -29,9 +30,9 @@ public class ToastManagerMixin {
     @Mixin(targets = "net.minecraft.client.toast.ToastManager$Entry")
     static class Entry {
         @Inject(method = "draw", at = @At("HEAD"), cancellable = true)
-        public void draw(DrawContext context, int scaledWindowWidth, CallbackInfo ci) {
+        public void draw(int x, DrawContext context, CallbackInfoReturnable<Boolean> cir) {
             if (AutumnClient.options.noToast.getValue()) {
-                ci.cancel();
+                cir.setReturnValue(true);
             }
         }
     }

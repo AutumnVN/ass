@@ -15,9 +15,9 @@ public class CameraMixin {
 
     // ThirdPersonNoClip
     @Inject(method = "clipToSpace", at = @At("HEAD"), cancellable = true)
-    private void clipToSpace(float f, CallbackInfoReturnable<Float> cir) {
+    private void clipToSpace(double desiredCameraDistance, CallbackInfoReturnable<Double> cir) {
         if (AutumnClient.options.thirdPersonNoClip.getValue()) {
-            cir.setReturnValue(f);
+            cir.setReturnValue(desiredCameraDistance);
         }
     }
 

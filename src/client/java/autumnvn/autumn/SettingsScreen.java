@@ -42,7 +42,7 @@ public class SettingsScreen extends Screen {
 
     @Override
     protected void init() {
-        this.list = new ButtonListWidget(this.client, this.width, this.height - 64, 32, 25);
+        this.list = new ButtonListWidget(this.client, this.width, this.height - 64, 32, this.height - 32, 25);
         for (int i = 0; i < options.length; i += 2) {
             if (i + 1 < options.length) {
                 this.list.addOptionEntry(options[i], options[i + 1]);

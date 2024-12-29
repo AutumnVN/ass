@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -30,11 +29,11 @@ public class Utils {
         if (cameraEntity == null) return null;
 
         double maxDistance = 128;
-        float tickDelta = AutumnClient.client.getRenderTickCounter().getTickDelta(true);
+        float tickDelta = AutumnClient.client.getTickDelta();
         Vec3d vec3d = cameraEntity.getEyePos();
         Vec3d vec3d2 = cameraEntity.getRotationVec(tickDelta).multiply(maxDistance);
         Box box = cameraEntity.getBoundingBox().stretch(vec3d2).expand(1.0);
-        EntityHitResult entityHitResult = ProjectileUtil.raycast(cameraEntity, vec3d, vec3d.add(vec3d2), box, EntityPredicates.CAN_HIT, maxDistance * maxDistance);
+        EntityHitResult entityHitResult = ProjectileUtil.raycast(cameraEntity, vec3d, vec3d.add(vec3d2), box, Entity::canHit, maxDistance * maxDistance);
 
         if (entityHitResult != null) {
             recentTargetedEntity = new TimedEntity(entityHitResult.getEntity());

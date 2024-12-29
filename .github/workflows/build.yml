@@ -1,9 +1,9 @@
 name: Build
 
 on:
-    push:
-      branches:
-        - main
+  push:
+    branches:
+      - 1.20.1
 
 permissions:
   contents: write
@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version: 17
           distribution: 'temurin'
 
       - name: Build
@@ -26,6 +26,6 @@ jobs:
 
       - name: Release
         run: |
-          gh release upload release --clobber build/libs/autumn-1.21.4.jar
+          gh release upload release --clobber build/libs/autumn-1.20.1.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -6,8 +6,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.LivingEntity;
@@ -24,6 +23,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -54,13 +54,13 @@ public class InGameHudMixin {
     }
 
     @Shadow
-    private void renderHotbarItem(DrawContext context, int x, int y, RenderTickCounter tickCounter, PlayerEntity player, ItemStack stack, int seed) {
+    private void renderHotbarItem(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed) {
     }
 
     // InfoHud
     @Inject(method = "render", at = @At("HEAD"))
-    private void render(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        if (AutumnClient.options.infoHud.getValue() && !client.options.hudHidden && !client.getDebugHud().shouldShowDebugHud() && client.player != null) {
+    private void render(DrawContext context, float tickDelta, CallbackInfo ci) {
+        if (AutumnClient.options.infoHud.getValue() && !client.options.hudHidden && !client.options.debugEnabled && client.player != null) {
 
             String[] direction = new String[]{"+Z", "-X+Z", "-X", "-X-Z", "-Z", "+X-Z", "+X", "+X+Z"};
             ArrayList<String> lines = new ArrayList<>();
@@ -90,13 +90,13 @@ public class InGameHudMixin {
                 lines.add(healthLine);
                 int x = 2 + client.textRenderer.getWidth(healthLine) + 2;
                 int y = 2 + (client.textRenderer.fontHeight + 2) * (lines.size() - 1);
-                context.drawGuiTexture(RenderLayer::getGuiTextured, Identifier.ofVanilla("hud/heart/container"), x, y, 9, 9);
-                context.drawGuiTexture(RenderLayer::getGuiTextured, Identifier.ofVanilla("hud/heart/full"), x, y, 9, 9);
+                context.drawTexture(new Identifier("hud/heart/container"), x, y, 0, 0, 9, 9);
+                context.drawTexture(new Identifier("hud/heart/full"), x, y, 0, 0, 9, 9);
             }
 
             if (Utils.getTargetedEntity() instanceof AbstractHorseEntity abstractHorseEntity) {
-                double speed = abstractHorseEntity.getAttributeValue(EntityAttributes.MOVEMENT_SPEED) * 42.157787584d;
-                double jump = abstractHorseEntity.getAttributeValue(EntityAttributes.JUMP_STRENGTH);
+                double speed = abstractHorseEntity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 42.157787584d;
+                double jump = abstractHorseEntity.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH);
                 double jumpHeight = -0.1817584952d * jump * jump * jump + 3.689713992d * jump * jump + 2.128599134d * jump - 0.343930367d;
                 lines.add(
                         String.format("Speed %s%.1fm/s §rJump %s%.1fm",
@@ -121,7 +121,7 @@ public class InGameHudMixin {
                 y -= getHeartRows(getHeartCount(getRiddenEntity())) * 10;
             }
             for (int i = 0, x = 63; i < 4; i++, x -= 15) {
-                renderHotbarItem(context, context.getScaledWindowWidth() / 2 + x, y, tickCounter, client.player, client.player.getInventory().getArmorStack(i), 1);
+                renderHotbarItem(context, context.getScaledWindowWidth() / 2 + x, y, tickDelta, client.player, client.player.getInventory().getArmorStack(i), 1);
             }
         }
     }
@@ -132,31 +132,24 @@ public class InGameHudMixin {
         return AutumnClient.options.infoHud.getValue() && client.interactionManager != null && client.interactionManager.hasStatusBars() ? original - 10 : original;
     }
 
-    @ModifyVariable(method = "renderStatusBars", at = @At("STORE"), ordinal = 10)
-    private int t(int original) {
+    @ModifyVariable(method = "renderStatusBars", at = @At("STORE"), ordinal = 13)
+    private int xx(int original) {
         return AutumnClient.options.infoHud.getValue() ? 0 : original;
     }
 
-    @ModifyVariable(method = "getAirBubbleY", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    private int heartCount(int original) {
-        return AutumnClient.options.infoHud.getValue() && getRiddenEntity() != null ? getHeartCount(getRiddenEntity()) : original;
+    @ModifyVariable(method = "renderStatusBars", at = @At("STORE"), ordinal = 10)
+    private int t(int original) {
+        return original - (AutumnClient.options.infoHud.getValue() && getRiddenEntity() != null ? getHeartRows(getHeartCount(getRiddenEntity())) * 10 : 0);
     }
 
-    @ModifyVariable(method = "renderMainHud", at = @At("STORE"))
-    private JumpingMount jumpingMount(JumpingMount original) {
-        return AutumnClient.options.infoHud.getValue() && client.player != null && client.interactionManager != null && (!client.interactionManager.hasExperienceBar() || client.options.jumpKey.isPressed() || client.player.getMountJumpStrength() > 0) ? original : null;
-    }
-
-    @Inject(method = "shouldRenderExperience", at = @At("HEAD"), cancellable = true)
-    private void shouldRenderExperience(CallbackInfoReturnable<Boolean> cir) {
-        if (AutumnClient.options.infoHud.getValue() && client.player != null && client.interactionManager != null && client.interactionManager.hasExperienceBar() && !client.options.jumpKey.isPressed() && client.player.getMountJumpStrength() <= 0) {
-            cir.setReturnValue(true);
-        }
+    @Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayerEntity;getJumpingMount()Lnet/minecraft/entity/JumpingMount;"))
+    private JumpingMount getJumpingMount(ClientPlayerEntity player) {
+        return AutumnClient.options.infoHud.getValue() && AutumnClient.client.interactionManager != null && (!AutumnClient.client.interactionManager.hasExperienceBar() || AutumnClient.client.options.jumpKey.isPressed() || player.getMountJumpStrength() > 0) ? player.getJumpingMount() : null;
     }
 
     // EffectHud
     @Inject(method = "renderStatusEffectOverlay", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z"))
-    private void renderStatusEffectOverlay(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci, @Local List<Runnable> list, @Local StatusEffectInstance statusEffectInstance, @Local(ordinal = 4) int x, @Local(ordinal = 3) int y) {
+    private void renderStatusEffectOverlay(DrawContext context, CallbackInfo ci, @Local List<Runnable> list, @Local StatusEffectInstance statusEffectInstance, @Local(ordinal = 4) int x, @Local(ordinal = 3) int y) {
         if (AutumnClient.options.infoHud.getValue()) {
             list.add(() -> {
                 String duration = durationString(statusEffectInstance);
