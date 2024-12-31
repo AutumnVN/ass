@@ -25,11 +25,11 @@ public class GameRendererMixin {
 
     // Zoom
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
-    private void getFov(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> cir) {
+    private void getFov(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Double> cir) {
         SimpleOption<Double> mouseSen = client.options.getMouseSensitivity();
         if (AutumnClient.zoomKey.isPressed()) {
             mouseSen.setValue(defaultMouseSen / 4);
-            cir.setReturnValue(cir.getReturnValueF() / 4);
+            cir.setReturnValue(cir.getReturnValueD() / 4);
         } else if (defaultMouseSen == null) {
             defaultMouseSen = mouseSen.getValue();
         } else {
