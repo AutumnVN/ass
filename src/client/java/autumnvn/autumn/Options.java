@@ -21,6 +21,7 @@ public class Options {
 
     public SimpleOption<Boolean> autoAttack;
     public SimpleOption<Boolean> ignorePlayer;
+    public SimpleOption<Boolean> autoHitSwap;
     public SimpleOption<Boolean> betterChat;
     public SimpleOption<Boolean> betterNametag;
     public SimpleOption<Boolean> deathCoord;
@@ -50,6 +51,8 @@ public class Options {
         options.put("autoAttack", autoAttack);
         ignorePlayer = SimpleOption.ofBoolean("Ignore Player", value -> Tooltip.of(Text.of("Auto Attack will ignore player")), false);
         options.put("ignorePlayer", ignorePlayer);
+        autoHitSwap = SimpleOption.ofBoolean("Auto Hit Swap", value -> Tooltip.of(Text.of("Swap item in main hand to another item in hotbar when attacking, then swap back after attack so it uses base damage & cooldown of original item and enchantments & ability to disable shield of swapped item\nPriority: axe when target is using shield, enchanted sword")), true);
+        options.put("autoHitSwap", autoHitSwap);
         betterChat = SimpleOption.ofBoolean("Better Chat", value -> Tooltip.of(Text.of("Lengthen chat history to 65k lines, keep chat/command history on switching world/server & remove chat indicator")), true);
         options.put("betterChat", betterChat);
         betterNametag = SimpleOption.ofBoolean("Better Nametag", value -> Tooltip.of(Text.of("Add health & gamemode to nametag, make player nametag always visible & show recently targeted entity nametag")), true);

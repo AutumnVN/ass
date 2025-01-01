@@ -13,6 +13,7 @@ public class SettingsScreen extends Screen {
     SimpleOption<?>[] options = new SimpleOption<?>[]{
             AutumnClient.options.autoAttack,
             AutumnClient.options.ignorePlayer,
+            AutumnClient.options.autoHitSwap,
             AutumnClient.options.betterChat,
             AutumnClient.options.betterNametag,
             AutumnClient.options.deathCoord,
