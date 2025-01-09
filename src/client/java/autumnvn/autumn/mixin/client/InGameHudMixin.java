@@ -15,7 +15,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -81,17 +80,13 @@ public class InGameHudMixin {
             if (Utils.getTargetedEntity() instanceof LivingEntity livingEntity) {
                 float health = livingEntity.getHealth() + livingEntity.getAbsorptionAmount();
                 String ownerName = Utils.getOwnerName(livingEntity);
-                String healthLine = String.format("%s%s %s%.0f",
+                String healthLine = String.format("%s%s %s%.0f§c❤",
                         ownerName != null ? ownerName + (ownerName.endsWith("s") ? "' " : "'s ") : "",
                         Objects.requireNonNull(livingEntity.getDisplayName()).getString(),
                         Utils.color(health, 0, livingEntity.getMaxHealth()),
                         health
                 );
                 lines.add(healthLine);
-                int x = 2 + client.textRenderer.getWidth(healthLine) + 2;
-                int y = 2 + (client.textRenderer.fontHeight + 2) * (lines.size() - 1);
-                context.drawTexture(new Identifier("hud/heart/container"), x, y, 0, 0, 9, 9);
-                context.drawTexture(new Identifier("hud/heart/full"), x, y, 0, 0, 9, 9);
             }
 
             if (Utils.getTargetedEntity() instanceof AbstractHorseEntity abstractHorseEntity) {
