@@ -61,7 +61,7 @@ public class InGameHudMixin {
     private void render(DrawContext context, float tickDelta, CallbackInfo ci) {
         if (AutumnClient.options.infoHud.getValue() && !client.options.hudHidden && !client.options.debugEnabled && client.player != null) {
 
-            String[] direction = new String[]{"+Z", "-X+Z", "-X", "-X-Z", "-Z", "+X-Z", "+X", "+X+Z"};
+            String[] direction = new String[]{"+X+Z", "+Z", "-X+Z", "-X", "-X-Z", "-Z", "+X-Z", "+X"};
             ArrayList<String> lines = new ArrayList<>();
 
             lines.add(String.format("%d fps", client.getCurrentFps()));
