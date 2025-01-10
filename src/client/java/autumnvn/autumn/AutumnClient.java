@@ -19,10 +19,13 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.decoration.InteractionEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
@@ -65,9 +68,17 @@ public class AutumnClient implements ClientModInitializer {
             handleToggleKey(freeCamKey, options.freeCam, "Free Cam");
 
             // AutoAttack
-            if (options.autoAttack.getValue() && client.player.getAttackCooldownProgress(0) >= 1 && client.targetedEntity instanceof LivingEntity livingEntity && livingEntity.isAttackable() && livingEntity.isAlive() && livingEntity.hurtTime == 0 && !(options.ignorePlayer.getValue() && livingEntity instanceof PlayerEntity)) {
-                client.interactionManager.attackEntity(client.player, livingEntity);
-                client.player.swingHand(client.player.getActiveHand());
+            if (options.autoAttack.getValue() && client.player.getAttackCooldownProgress(0) >= 1) {
+                if (client.targetedEntity instanceof LivingEntity livingEntity && livingEntity.isAttackable() && livingEntity.isAlive() && livingEntity.hurtTime == 0 && !(options.ignorePlayer.getValue() && livingEntity instanceof PlayerEntity)) {
+                    client.interactionManager.attackEntity(client.player, livingEntity);
+                    client.player.swingHand(client.player.getActiveHand());
+                } else if (client.crosshairTarget instanceof EntityHitResult entityHitResult && entityHitResult.getEntity() instanceof InteractionEntity interactionEntity) {
+                    NbtCompound nbt = interactionEntity.writeNbt(new NbtCompound());
+                    if (nbt.getFloat("width") < 2 && nbt.getFloat("height") > 1.6) {
+                        client.interactionManager.attackEntity(client.player, interactionEntity);
+                        client.player.swingHand(client.player.getActiveHand());
+                    }
+                }
             }
 
             // FreeCam
