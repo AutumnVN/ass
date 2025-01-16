@@ -8,6 +8,7 @@
     "BarrierBlockMixin",
     "CameraMixin",
     "ChatHudMixin",
+    "ClientPlayerEntityMixin",
     "ClientPlayerInteractionManagerMixin",
     "ClientPlayNetworkHandlerMixin",
     "DeathScreenMixin",
