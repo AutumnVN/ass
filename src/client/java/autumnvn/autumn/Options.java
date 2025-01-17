@@ -52,7 +52,7 @@ public class Options {
         options.put("autoAttack", autoAttack);
         ignorePlayer = SimpleOption.ofBoolean("Ignore Player", value -> Tooltip.of(Text.of("Auto Attack will ignore player")), false);
         options.put("ignorePlayer", ignorePlayer);
-        autoHitSwap = SimpleOption.ofBoolean("Auto Hit Swap", value -> Tooltip.of(Text.of("Swap item in main hand to another item in hotbar when attacking, then swap back after attack so it uses base damage & cooldown of original item and enchantments & ability to disable shield of swapped item\nPriority: axe when target is using shield, enchanted sword")), true);
+        autoHitSwap = SimpleOption.ofBoolean("Auto Hit Swap", value -> Tooltip.of(Text.of("Swap item in main hand to another item in hotbar when attacking, then swap back after attack so it uses base damage & cooldown of original item and enchantments & ability to disable shield of swapped item\nPriority:\nAxe if target is using shield\n\nSmite sword if target is undead\nBane of arthropods sword if target is arthropod\nImpaling trident if target is aquatic\nEnchanted sword\nNon-weapon if holding unenchanted sword/non-sharpness axe/other weapons")), true);
         options.put("autoHitSwap", autoHitSwap);
         autoSprint = SimpleOption.ofBoolean("Auto Sprint", value -> Tooltip.of(Text.of("Automatically sprint when moving forward")), true);
         options.put("autoSprint", autoSprint);
